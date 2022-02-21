@@ -84,3 +84,32 @@ case class OrionSourceNode[T<: Data](portParams: Seq[OrionPushPortParameters[T]]
 
 case class OrionSinkNode  [T<: Data](portParams: Seq[OrionPullPortParameters[T]])(implicit valName: ValName) extends SinkNode(OrionImp[T])(portParams)
 
+
+/**
+  *   Adapter Node that requires the input/output bundles to be the same
+  */
+case class OrionAdapterNode [T<: Data] (
+  sourceFn: OrionPushPortParameters[T] => OrionPushPortParameters[T],
+  sinkFn:   OrionPullPortParameters[T] => OrionPullPortParameters[T]  )(
+  implicit valName: ValName)
+  extends AdapterNode(OrionImp[T])(sourceFn, sinkFn)
+
+/**
+  *   Adapter Node that allows in the Input and Output Bundles to be different
+  *   I - Represents the input node type
+  *   O - Represents the output node type
+  */
+case class OrionMixedAdapterNode [I <: Data, O <: Data] (
+  sourceFn: OrionPushPortParameters[I] => OrionPushPortParameters[O],
+  sinkFn:   OrionPullPortParameters[O] => OrionPullPortParameters[I]  )(
+  implicit valName: ValName)
+  extends MixedAdapterNode(OrionImp[I], OrionImp[O])(sourceFn, sinkFn)
+
+
+case class OrionNexusNode [T<: Data] (
+  sourceFn: Seq[OrionPushPortParameters[T]] => OrionPushPortParameters[T],
+  sinkFn:   Seq[OrionPullPortParameters[T]] => OrionPullPortParameters[T]  )(
+  implicit valName: ValName)
+  extends NexusNode(OrionImp[T])(sourceFn, sinkFn)
+
+
