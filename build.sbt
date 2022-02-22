@@ -6,8 +6,11 @@ ThisBuild / version          := "0.1.0"
 ThisBuild / organization     := "com.github.lsteveol"
 
 
-val chiselVersion = "3.5.1"
+val chiselVersion = "3.5.0"
 val chiselTestVersion = "0.5.0"
+
+//val chiselVersion = "3.4.3"
+//val chiselTestVersion = "0.3.4"
 
 lazy val rocketChip = RootProject(file("./rocket-chip"))
 //lazy val wavCommon  = RootProject(file("./wav-chisel-common-hw"))
@@ -32,9 +35,8 @@ lazy val root = (project in file("."))
       "-deprecation",
       "-feature",
       "-Xcheckinit",
-      "-P:chiselplugin:genBundleElements",
+      "-P:chiselplugin:genBundleElements",  //THIS IS NEEDED FOR CHISEL 3.5+
     ),
-    //addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.4.3" cross CrossVersion.full),
     addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
   )

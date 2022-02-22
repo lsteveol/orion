@@ -113,3 +113,9 @@ case class OrionNexusNode [T<: Data] (
   extends NexusNode(OrionImp[T])(sourceFn, sinkFn)
 
 
+
+case class OrionMixedNexusNode [I <: Data, O <: Data] (
+  sourceFn: Seq[OrionPushPortParameters[I]] => OrionPushPortParameters[O],
+  sinkFn:   Seq[OrionPullPortParameters[O]] => OrionPullPortParameters[I]  )(
+  implicit valName: ValName)
+  extends MixedNexusNode(OrionImp[I], OrionImp[O])(sourceFn, sinkFn)
