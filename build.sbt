@@ -6,7 +6,7 @@ ThisBuild / version          := "0.1.0"
 ThisBuild / organization     := "com.github.lsteveol"
 
 
-val chiselVersion = "3.5.0"
+val chiselVersion = "3.5.1"
 val chiselTestVersion = "0.5.0"
 
 //val chiselVersion = "3.4.3"
