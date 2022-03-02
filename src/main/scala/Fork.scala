@@ -74,9 +74,9 @@ class RegFork[T <: Data](
     out_ch(0).req         := reg_fork.io.outB_req
     out_ch(0).data        := reg_fork.io.outB_data
     
-    reg_fork.io.outB_ack  := out_ch(1).ack
-    out_ch(1).req         := reg_fork.io.outB_req
-    out_ch(1).data        := reg_fork.io.outB_data
+    reg_fork.io.outC_ack  := out_ch(1).ack
+    out_ch(1).req         := reg_fork.io.outC_req
+    out_ch(1).data        := reg_fork.io.outC_data
     
   }
 }
