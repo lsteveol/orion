@@ -7,6 +7,20 @@ import chisel3.stage.ChiselStage
 import freechips.rocketchip.config.{Parameters, Field, Config}
 import freechips.rocketchip.diplomacy._
 
+import freechips.rocketchip.util._
+
+import java.io.{File, FileWriter}
+object GenElabArts {
+  def gen(prefix: String) {
+    ElaborationArtefacts.files.foreach { case (extension, contents) =>
+      //println(s"ext - ${extension} : cont - ${contents}")
+      val f = new File(".", s"${prefix}.${extension}")
+      val fw = new FileWriter(f)
+      fw.write(contents())//note the ()
+      fw.close
+    }
+  }
+}
 
 
 /**
@@ -53,23 +67,15 @@ class FibAdder(itype : FibAdderBundle, otype : UInt)(implicit p: Parameters) ext
 }
 
 
-
 class Fib(gen : UInt)(implicit p: Parameters) extends LazyModule{
   
   val R0      = LazyModule(new DecoupReg(gen))
-
   val RF0     = LazyModule(new RegFork(gen, dataInit=1))
   val RF1     = LazyModule(new RegFork(gen, dataInit=1))
-    
   val J0      = LazyModule(new JoinFibAdder(gen, new FibAdderBundle(gen)))
-  
   val CL0     = LazyModule(new FibAdder(Flipped(new FibAdderBundle(gen)), gen))
-  
   val barrier = LazyModule(new Barrier(gen))
-  
-  val output  = new OrionSinkNode[UInt](Seq(OrionPullPortParameters[UInt](Seq(OrionPullParameters(gen, "sink")))))
-  
-  
+  val output  = new OrionSinkNode(Seq(OrionPullPortParameters(Seq(OrionPullParameters(gen, "sink")))))
   
   RF0.node := R0.out
   RF1.node := RF0.node
@@ -82,12 +88,12 @@ class Fib(gen : UInt)(implicit p: Parameters) extends LazyModule{
   R0.in    := CL0.node
   
   output   := RF1.node
-  
-  
-  
+
   val out = InModuleBody { output.makeIOs() }
   
   lazy val module = new FibImp(this)
+  
+  ElaborationArtefacts.add("graphml", module.wrapper.graphML)
   
 }
 
@@ -95,7 +101,19 @@ class FibImp(override val wrapper: Fib)(implicit p: Parameters) extends LazyModu
   val start = IO(Input (Bool()))
     
   wrapper.barrier.module.start := start
+  
 }
+
+
+
+  
+//   //new for mux
+//   val sel = new OrionSourceNode(Seq(OrionPushPortParameters(Seq(OrionPushParameters(Bool(), "sel")))))
+//   val d0  = new OrionSourceNode(Seq(OrionPushPortParameters(Seq(OrionPushParameters(gen, "d0")))))
+//   
+//   output := OrionMux(sel, RF1.node, d0)
+  
+
 
 
 object FibTest extends App {  
@@ -109,4 +127,5 @@ object FibTest extends App {
     Array("--target-dir", "output")
   )
   
+  GenElabArts.gen("Fib")
 }

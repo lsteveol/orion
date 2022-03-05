@@ -70,7 +70,7 @@ class OrionImp [T<: Data] extends NodeImp[OrionPushPortParameters[T], OrionPullP
   def bundleO(eo: OrionEdgeParameters[T]) = OrionBundle[T](eo.push.pushes(0).gen)
   def bundleI(ei: OrionEdgeParameters[T]) = Flipped(OrionBundle[T](ei.pull.pulls(0).gen))
   
-  def render(ei: OrionEdgeParameters[T]) = RenderedEdge(colour = "#ff00ff", label = s"blah")
+  def render(ei: OrionEdgeParameters[T]) = RenderedEdge(colour = "#ff00ff", label = s"")
 
   
 }
