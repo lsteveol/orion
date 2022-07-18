@@ -102,6 +102,10 @@ class FibImp(override val wrapper: Fib)(implicit p: Parameters) extends LazyModu
     
   wrapper.barrier.module.start := start
   
+//   val mydc = RegNext(start)
+//   dontTouch(mydc)
+//   sdcDontTouch(mydc)
+  
 }
 
 

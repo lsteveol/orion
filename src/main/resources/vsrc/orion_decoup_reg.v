@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module orion_decoup_reg #(
   parameter   WIDTH     = 1,
   parameter   D_INIT    = 0,

@@ -16,24 +16,21 @@ import freechips.rocketchip.diplomacy._
   */
 class DecoupReg[T <: Data](gen : T, dataInit: Int = 0, piInit: Int = 0, poInit: Int = 0)(implicit p: Parameters) extends LazyModule{
   
-  val in  = new OrionSinkNode[T](Seq(OrionPullPortParameters[T](Seq(OrionPullParameters(gen, "drIn")))))
-  val out = new OrionSourceNode[T](Seq(OrionPushPortParameters[T](Seq(OrionPushParameters(gen, "drOut")))))
+  val in  = new OrionSinkNode[T](Seq(OrionPullPortParameters[T](Seq(OrionPullParameters(gen, "drIn", Some(this))))))
+  val out = new OrionSourceNode[T](Seq(OrionPushPortParameters[T](Seq(OrionPushParameters(gen, "drOut", Some(this))))))
   
   override lazy val module = new LazyModuleImp(this) {
     
     val in_ch  = in.in.head._1
     val out_ch = out.out.head._1
     
-//     println(in_ch.data)
-//     
-//     //var b = Seq.empty[Data]
-//     //if(in_ch.data.isInstanceOf[Bundle]){
-//     val blah = in_ch.data match{
-//       case _: Bundle => println("it's a bundle")
-//       case _         => println("it's not a bundle")
-//     }
-//       //var b = in_ch.data.elements.map(_._2)
-//     //}
+    //println(in.in.head._1.getClass)
+    //println(in.in.head._2)
+    //println(OrionUtils.getPath(in.in.head._2.push.pushes.inst.get))
+    //println(OrionUtils.getPath(wrapper))
+    println(OrionUtils.getPath(in.in.head._2.push.pushes(0).inst))
+    println(OrionUtils.getPath(out.out.head._2.pull.pulls(0).inst))
+    
     
     val decoup_reg = Module(new orion_decoup_reg(gen, gen.getWidth, dataInit, piInit, poInit))
     decoup_reg.io.reset   := reset

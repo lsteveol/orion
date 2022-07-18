@@ -17,7 +17,7 @@ module orion_mux #(
   
   input  wire             inSel_req,
   output wire             inSel_ack,
-  input  wire [WIDTH-1:0] inSel_data,   //just the sel line
+  input  wire             inSel_data,   //just the sel line
   
   output wire             out_req,
   input  wire             out_ack,
