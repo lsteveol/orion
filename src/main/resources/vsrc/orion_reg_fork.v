@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module orion_reg_fork #(
   parameter WIDTH     = 1,
   parameter INIT      = 0,

@@ -28,8 +28,8 @@ class DecoupReg[T <: Data](gen : T, dataInit: Int = 0, piInit: Int = 0, poInit: 
     //println(in.in.head._2)
     //println(OrionUtils.getPath(in.in.head._2.push.pushes.inst.get))
     //println(OrionUtils.getPath(wrapper))
-    println(OrionUtils.getPath(in.in.head._2.push.pushes(0).inst))
-    println(OrionUtils.getPath(out.out.head._2.pull.pulls(0).inst))
+    //println(OrionUtils.getPath(in.in.head._2.push.pushes(0).inst))
+    //println(OrionUtils.getPath(out.out.head._2.pull.pulls(0).inst))
     
     
     val decoup_reg = Module(new orion_decoup_reg(gen, gen.getWidth, dataInit, piInit, poInit))

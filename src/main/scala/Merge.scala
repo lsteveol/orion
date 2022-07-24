@@ -9,7 +9,8 @@ import freechips.rocketchip.diplomacy._
 
 
 
-class OrionMerge[T <: Data](
+class Merge[T <: Data](
+  gen     : T,
   paInit  : Int = 0, 
   pbInit  : Int = 0,
   pcInit  : Int = 0
@@ -80,14 +81,14 @@ class OrionMerge[T <: Data](
 }
 
 
-object OrionMerge{
-  def apply[T <: Data, BN](in0: BN, in1: BN)(implicit p: Parameters, 
-     ev: BN <:< MixedNode[OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T],
-                          OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T]]): OrionNexusNode[T] = {
-    val omerge = LazyModule(new OrionMerge[T])
-    omerge.node := in0
-    omerge.node := in1
-    omerge.node
-  }
-                        
-}
+// object Merge{
+//   def apply[T <: Data, BN](in0: BN, in1: BN)(implicit p: Parameters, 
+//      ev: BN <:< MixedNode[OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T],
+//                           OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T]]): OrionNexusNode[T] = {
+//     val omerge = LazyModule(new Merge[T])
+//     omerge.node := in0
+//     omerge.node := in1
+//     omerge.node
+//   }
+//                         
+// }

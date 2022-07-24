@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module orion_barrier (
   input  wire start,
   input  wire in_req,

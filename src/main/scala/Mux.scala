@@ -9,7 +9,7 @@ import freechips.rocketchip.diplomacy._
 
 
 class OrionMux[T <: Data](
-  //gen     : T,
+  gen     : T,
   paInit  : Int = 0, 
   pbInit  : Int = 0,
   pcInit  : Int = 0,
@@ -21,7 +21,7 @@ class OrionMux[T <: Data](
     sinkFn    = { seq => seq(0).copy() }
   )
   
-  val sel_node  = new OrionSinkNode[Bool](Seq(OrionPullPortParameters[Bool](Seq(OrionPullParameters(Bool(), "sel")))))
+  val sel  = new OrionSinkNode[Bool](Seq(OrionPullPortParameters[Bool](Seq(OrionPullParameters(Bool(), "sel")))))
   
   override lazy val module = new LazyModuleImp(this) {
     require(node.in.size  == 2, s"OrionMux requires two input channels but saw ${node.in.size}")
@@ -68,7 +68,7 @@ class OrionMux[T <: Data](
     
     val (in_ch, edgesIn)    = node.in.unzip
     val out_ch              = node.out.head._1
-    val sel_ch              = sel_node.in.head._1
+    val sel_ch              = sel.in.head._1
     
     val omux = Module(new orion_mux(edgesIn(0).push.pushes(0).gen, edgesIn(0).push.pushes(0).gen.getWidth, paInit, pbInit, pcInit, pselInit))
     
@@ -102,33 +102,19 @@ class OrionMux[T <: Data](
 /**
 ` *   See "Type Constraints" in Scala for the Impatient
   */
-object OrionMux {
-  def apply[T <: Data, SN <: MixedNode[OrionPushPortParameters[Bool], OrionPullPortParameters[Bool], OrionEdgeParameters[Bool], OrionBundle[Bool],
-                                       OrionPushPortParameters[Bool], OrionPullPortParameters[Bool], OrionEdgeParameters[Bool], OrionBundle[Bool]],
-                              BN](sel : SN, b: BN, a : BN)(implicit p: Parameters, 
-     ev: BN <:< MixedNode[OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T],
-                          OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T]]): OrionNexusNode[T] = {
-    val omux = LazyModule(new OrionMux[T])
-    
-    omux.node     := a
-    omux.node     := b
-    omux.sel_node := sel
-    
-    omux.node
-  }
-}
-
 // object OrionMux {
-//   def apply[T <: Data, 
-//             BN <: MixedNode[OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T],
-//                             OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T]]]
-//     (sel : BN, b: BN, a : BN)(implicit p: Parameters): OrionNexusNode[T] = {
+//   def apply[T <: Data, SN <: MixedNode[OrionPushPortParameters[Bool], OrionPullPortParameters[Bool], OrionEdgeParameters[Bool], OrionBundle[Bool],
+//                                        OrionPushPortParameters[Bool], OrionPullPortParameters[Bool], OrionEdgeParameters[Bool], OrionBundle[Bool]],
+//                               BN](sel : SN, b: BN, a : BN)(implicit p: Parameters, 
+//      ev: BN <:< MixedNode[OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T],
+//                           OrionPushPortParameters[T], OrionPullPortParameters[T], OrionEdgeParameters[T], OrionBundle[T]]): OrionNexusNode[T] = {
 //     val omux = LazyModule(new OrionMux[T])
 //     
-//     omux.node := a
-//     omux.node := b
-//     omux.node := sel
+//     omux.node     := a
+//     omux.node     := b
+//     omux.sel := sel
 //     
 //     omux.node
 //   }
 // }
+

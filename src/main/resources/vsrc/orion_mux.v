@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module orion_mux #(
   parameter WIDTH     = 1,
   parameter PA_INIT   = 0,

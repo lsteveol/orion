@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module orion_join #(
   parameter P_INIT    = 0
 )(

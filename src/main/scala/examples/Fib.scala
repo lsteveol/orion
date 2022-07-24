@@ -31,16 +31,16 @@ class FibAdderBundle(gen : UInt) extends Bundle{
   val b = Output(gen)
 }
 
-class JoinFibAdder(itype : UInt, otype : FibAdderBundle, pInit: Int = 0)(implicit p: Parameters) extends Join[UInt,FibAdderBundle](itype, otype, pInit){
-
-  override lazy val module = new LazyModuleImp(this) {
-    joinBase(this)
-
-    out.data.a := ina.data
-    out.data.b := inb.data
-
-  }
-}
+// class JoinFibAdder(itype : UInt, otype : FibAdderBundle, pInit: Int = 0)(implicit p: Parameters) extends Join[UInt,FibAdderBundle](itype, otype, pInit){
+// 
+//   override lazy val module = new LazyModuleImp(this) {
+//     joinBase(this)
+// 
+//     out.data.a := ina.data
+//     out.data.b := inb.data
+// 
+//   }
+// }
 
 
 class FibAdder(itype : FibAdderBundle, otype : UInt)(implicit p: Parameters) extends LazyModule{
@@ -72,22 +72,29 @@ class Fib(gen : UInt)(implicit p: Parameters) extends LazyModule{
   val R0      = LazyModule(new DecoupReg(gen))
   val RF0     = LazyModule(new RegFork(gen, dataInit=1))
   val RF1     = LazyModule(new RegFork(gen, dataInit=1))
-  val J0      = LazyModule(new JoinFibAdder(gen, new FibAdderBundle(gen)))
-  val CL0     = LazyModule(new FibAdder(Flipped(new FibAdderBundle(gen)), gen))
+  val J0      = LazyModule(new Join(gen, new FibAdderBundle(gen))({j => 
+    j.out.data.a := j.ina.data
+    j.out.data.b := j.inb.data
+  }))
+  //val CL0     = LazyModule(new FibAdder(Flipped(new FibAdderBundle(gen)), gen))
+  
   val barrier = LazyModule(new Barrier(gen))
   val output  = new OrionSinkNode(Seq(OrionPullPortParameters(Seq(OrionPullParameters(gen, "sink")))))
   
-  RF0.node := R0.out
-  RF1.node := RF0.node
+  RF0.in   := R0.out
+  RF1.in   := RF0.out0
   
-  J0.node  := RF0.node
-  J0.node  := barrier.node := RF1.node
+  J0.node  := RF0.out1
+  J0.node  := barrier.node := RF1.out0
   
-  CL0.node := J0.node
+//   CL0.node := J0.node
+//   
+//   R0.in    := CL0.node
+  R0.in := FunctionBlock(new FibAdderBundle(gen), gen)(f=> {
+    f.out.data  := f.in.data.a + f.in.data.b
+  }) := J0.node
   
-  R0.in    := CL0.node
-  
-  output   := RF1.node
+  output   := RF1.out1
 
   val out = InModuleBody { output.makeIOs() }
   
