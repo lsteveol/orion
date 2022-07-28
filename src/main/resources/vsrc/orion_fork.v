@@ -22,7 +22,7 @@ assign outB_req = inA_req;
 assign outC_req = inA_req;
 assign inA_ack  = phase;
 
-assign #10ps click = (outC_ack & outB_ack & ~phase) | (~outC_ack and ~outB_ack & phase);
+assign #10ps click = (outC_ack & outB_ack & ~phase) | (~outC_ack & ~outB_ack & phase);
 
 always @(posedge click or posedge reset) begin
   if(reset) begin

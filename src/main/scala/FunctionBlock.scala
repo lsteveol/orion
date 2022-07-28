@@ -33,19 +33,19 @@ class FunctionBlock[I <: Data, O <: Data](itype : I, otype : O)(body: FunctionBl
     },
   )
   
-  var cpBody = body
+  //var cpBody = body
       
-  override lazy val module = new FunctionBlockImp[I,O](this, body, cpBody)
+  override lazy val module = new FunctionBlockImp[I,O](this, body/*, cpBody*/)
 }
 
-class FunctionBlockImp[I <: Data, O <: Data](override val wrapper: FunctionBlock[I,O], body: FunctionBlockImp[I,O] => Unit, cpBody: FunctionBlockImp[I,O] => Unit)(implicit p: Parameters) extends LazyModuleImp(wrapper){
+class FunctionBlockImp[I <: Data, O <: Data](override val wrapper: FunctionBlock[I,O], body: FunctionBlockImp[I,O] => Unit/*, cpBody: FunctionBlockImp[I,O] => Unit*/)(implicit p: Parameters) extends LazyModuleImp(wrapper){
   val in  = wrapper.node.in.head._1
   val out = wrapper.node.out.head._1
   
   in.ack    := out.ack
   out.req   := in.req 
   
-  cpBody(this)
+  //cpBody(this)
   body(this)
 }
 

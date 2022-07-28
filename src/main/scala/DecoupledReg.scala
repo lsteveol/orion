@@ -31,46 +31,62 @@ class DecoupReg[T <: Data](gen : T, dataInit: Int = 0, piInit: Int = 0, poInit: 
     //println(OrionUtils.getPath(in.in.head._2.push.pushes(0).inst))
     //println(OrionUtils.getPath(out.out.head._2.pull.pulls(0).inst))
     
+    val pi            = Wire(Bool())
+    val po            = Wire(Bool())
     
-    val decoup_reg = Module(new orion_decoup_reg(gen, gen.getWidth, dataInit, piInit, poInit))
-    decoup_reg.io.reset   := reset
-    in_ch.ack             := decoup_reg.io.in_ack
-    decoup_reg.io.in_req  := in_ch.req
-    decoup_reg.io.in_data := in_ch.data
+    val click         = OrionDelay(((in_ch.req ^ pi) & ~(out_ch.ack ^ po)), 10)
     
-    decoup_reg.io.out_ack := out_ch.ack
-    out_ch.req            := decoup_reg.io.out_req
-    out_ch.data           := decoup_reg.io.out_data
+    val pi_pre        = withClockAndReset(click.asClock, reset.asAsyncReset){RegNext(~pi, init=piInit.U)}
+    val po_pre        = withClockAndReset(click.asClock, reset.asAsyncReset){RegNext(~po, init=poInit.U)}
+    val data_pre      = withClockAndReset(click.asClock, reset.asAsyncReset){RegNext(in_ch.data, init=dataInit.U)}
+    
+    pi                := OrionDelay(pi_pre, 10)
+    po                := OrionDelay(po_pre, 10)
+    out_ch.data       := OrionDelay(data_pre, 10)
+    
+    out_ch.req        := po
+    in_ch.ack         := pi
+    
+//     //OLD
+//     val decoup_reg = Module(new orion_decoup_reg(gen, gen.getWidth, dataInit, piInit, poInit))
+//     decoup_reg.io.reset   := reset
+//     in_ch.ack             := decoup_reg.io.in_ack
+//     decoup_reg.io.in_req  := in_ch.req
+//     decoup_reg.io.in_data := in_ch.data
+//     
+//     decoup_reg.io.out_ack := out_ch.ack
+//     out_ch.req            := decoup_reg.io.out_req
+//     out_ch.data           := decoup_reg.io.out_data
     
   }
 }
 
 
-class orion_decoup_reg[T <: Data](
-  gen       : T,
-  width     : Int,
-  dataInit  : Int,
-  piInit    : Int,
-  poInit    : Int
-) extends BlackBox(Map(
-  "WIDTH"   -> width,
-  "D_INIT"  -> dataInit,
-  "PI_INIT" -> piInit,
-  "PO_INIT" -> poInit
-)) with HasBlackBoxResource {
-  val io = IO(new Bundle{
-    val reset     = Input (Reset())
-    val in_ack    = Output(Bool())
-    val in_req    = Input (Bool())
-    val in_data   = Input (gen)
-
-    val out_ack   = Input (Bool())
-    val out_req   = Output(Bool())
-    val out_data  = Output(gen)
-  })
-
-  addResource("vsrc/orion_decoup_reg.v")
-}
+// class orion_decoup_reg[T <: Data](
+//   gen       : T,
+//   width     : Int,
+//   dataInit  : Int,
+//   piInit    : Int,
+//   poInit    : Int
+// ) extends BlackBox(Map(
+//   "WIDTH"   -> width,
+//   "D_INIT"  -> dataInit,
+//   "PI_INIT" -> piInit,
+//   "PO_INIT" -> poInit
+// )) with HasBlackBoxResource {
+//   val io = IO(new Bundle{
+//     val reset     = Input (Reset())
+//     val in_ack    = Output(Bool())
+//     val in_req    = Input (Bool())
+//     val in_data   = Input (gen)
+// 
+//     val out_ack   = Input (Bool())
+//     val out_req   = Output(Bool())
+//     val out_data  = Output(gen)
+//   })
+// 
+//   addResource("vsrc/orion_decoup_reg.v")
+// }
 
 // object DecoupReg{
 //   def apply[T <: Data](gen : T, dataInit: Int = 0, piInit: Int = 0, poInit: Int = 0)(implicit p: Parameters): OrionAdapterNode[T] = {

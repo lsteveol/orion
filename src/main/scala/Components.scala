@@ -32,8 +32,8 @@ object OrionDemetReset{
 
 
 class OrionDelay[T <: Data](gen: T, delayPs: Int = 0) extends Module{
-  val in  = IO(Input (gen))
-  val out = IO(Output(gen))
+  val in  = IO(Input (gen.cloneType))
+  val out = IO(Output(gen.cloneType))
   
   
   gen match {
@@ -64,7 +64,7 @@ class OrionDelay[T <: Data](gen: T, delayPs: Int = 0) extends Module{
     })
     
     setInline("OrionDelayVerilog.v",
-    """`timescale 1ps/1ns
+    """`timescale 1ps/1fs
     |module OrionDelayVerilog #(
     |  parameter WIDTH     = 1,
     |  parameter DELAY_PS  = 0
@@ -72,38 +72,17 @@ class OrionDelay[T <: Data](gen: T, delayPs: Int = 0) extends Module{
     |  input  wire [WIDTH-1:0] in,
     |  output wire [WIDTH-1:0] out
     |);
-    |assign #(DELAY_PS)ps out = in;
+    |assign #(DELAY_PS * 1ps) out = in;
     |endmodule
     """.stripMargin)
   }
 }
 
 
-
-class MySubBundle extends Bundle{
-  val sub1 = Input (Bool())
-  val sub2 = Input (UInt(3.W))
-}
-class MyBundle extends Bundle{
-  val sig1 = Input (UInt(4.W))
-  //val bun  = new MySubBundle
-  val sig2 = Input (Bool())
-  //val vec  = Vec(2, Bool())
-}
-
-
-object DelayApp extends App{
-  
-  
-  println(getVerilogString(new OrionDelay(UInt(8.W))))
-  println(getVerilogString(new OrionDelay(new MyBundle)))
-  //println(getVerilogString(new OrionDelay(Vec(2, UInt(4.W)))))
-  
-//   val verilog = (new ChiselStage).emitVerilog(
-//     new OrionDelay(new GCDBundle(8)),
-// 
-//     //args
-//     Array("--target-dir", "output")
-//   )
-  
+object OrionDelay{
+  def apply[T <: Data](in: T, delayPs: Int = 0): T = {
+    val orion_delay = Module(new OrionDelay(in, delayPs))
+    orion_delay.in := in
+    orion_delay.out
+  }
 }

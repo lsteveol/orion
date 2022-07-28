@@ -32,7 +32,7 @@ class Join[I <: Data, O <: Data](itype : I, otype : O, val pInit: Int = 0)(body:
 }
 
 
-class JoinImp[I <: Data, O <: Data](override val wrapper: Join[I,O], body: JoinImp[I,O] => Unit)(implicit p: Parameters) extends LazyModuleImp(wrapper){
+class JoinImp[I <: Data, O <: Data](override val wrapper: Join[I,O], body: JoinImp[I,O] => Unit)(implicit p: Parameters) extends LazyModuleImp(wrapper) {
   
   require(wrapper.node.in.size  == 2, s"Join requires two input channels but saw ${wrapper.node.in.size}")
   require(wrapper.node.out.size == 1, s"Join requires one output channel but saw ${wrapper.node.out.size}")
@@ -44,31 +44,43 @@ class JoinImp[I <: Data, O <: Data](override val wrapper: Join[I,O], body: JoinI
   val inb = in_ch(1)
   val out = out_ch(0)
   
-  val ojoin = Module(new orion_join(wrapper.pInit))
-  ojoin.io.reset    := reset
-  ina.ack           := ojoin.io.inA_ack
-  ojoin.io.inA_req  := ina.req
-  inb.ack           := ojoin.io.inB_ack
-  ojoin.io.inB_req  := inb.req
-
-  ojoin.io.outC_ack := out.ack
-  out.req           := ojoin.io.outC_req
+  val phase     = Wire(Bool())
+  val click     = OrionDelay(((ina.req & inb.req & ~phase) | (~ina.req & ~inb.req & phase)), 10)
+  
+  val phase_pre = withClockAndReset(click.asClock, reset.asAsyncReset){RegNext(~phase, init=wrapper.pInit.U)}
+  
+  phase         := OrionDelay(phase_pre, 10)
+  
+  out.req       := phase
+  ina.ack       := out.ack
+  inb.ack       := out.ack
+   
+  
+//   val ojoin = Module(new orion_join(wrapper.pInit))
+//   ojoin.io.reset    := reset
+//   ina.ack           := ojoin.io.inA_ack
+//   ojoin.io.inA_req  := ina.req
+//   inb.ack           := ojoin.io.inB_ack
+//   ojoin.io.inB_req  := inb.req
+// 
+//   ojoin.io.outC_ack := out.ack
+//   out.req           := ojoin.io.outC_req
     
   body(this)
 }
 
 
-class orion_join(pInit : Int) extends BlackBox(Map("P_INIT" -> pInit)) with HasBlackBoxResource {
-  val io = IO(new Bundle{
-    val reset     = Input (Reset())
-    val inA_ack   = Output(Bool())
-    val inA_req   = Input (Bool())
-    val inB_ack   = Output(Bool())
-    val inB_req   = Input (Bool())
-
-    val outC_ack  = Input (Bool())
-    val outC_req  = Output(Bool())
-  })
-
-  addResource("vsrc/orion_join.v")
-}
+// class orion_join(pInit : Int) extends BlackBox(Map("P_INIT" -> pInit)) with HasBlackBoxResource {
+//   val io = IO(new Bundle{
+//     val reset     = Input (Reset())
+//     val inA_ack   = Output(Bool())
+//     val inA_req   = Input (Bool())
+//     val inB_ack   = Output(Bool())
+//     val inB_req   = Input (Bool())
+// 
+//     val outC_ack  = Input (Bool())
+//     val outC_req  = Output(Bool())
+//   })
+// 
+//   addResource("vsrc/orion_join.v")
+// }

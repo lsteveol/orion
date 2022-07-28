@@ -9,23 +9,15 @@ ThisBuild / organization     := "com.github.lsteveol"
 val chiselVersion = "3.5.1"
 val chiselTestVersion = "0.5.0"
 
-//val chiselVersion = "3.4.3"
-//val chiselTestVersion = "0.3.4"
-
 lazy val rocketChip = RootProject(file("./rocket-chip"))
-//lazy val wavCommon  = RootProject(file("./wav-chisel-common-hw"))
 
 lazy val root = (project in file("."))
   .settings(
     name := "orion",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.0" % "test",
-      //"edu.berkeley.cs" %% "chisel3" % "3.4.3",
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-      //"edu.berkeley.cs" %% "chisel3" % "3.5",
-      //"edu.berkeley.cs" %% "chiseltest" % "0.3.4" % "test",
       "edu.berkeley.cs" %% "chiseltest" % chiselTestVersion % "test",
-      //"edu.berkeley.cs" %% "chiseltest" % "0.3.4",
       "com.github.scopt" %% "scopt" % "4.0.1"
     ),
     scalacOptions ++= Seq(

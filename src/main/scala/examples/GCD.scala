@@ -6,7 +6,7 @@ import chisel3.stage.ChiselStage
 
 import freechips.rocketchip.config.{Parameters, Field, Config}
 import freechips.rocketchip.diplomacy._
-
+import freechips.rocketchip.util._
 
 class GCDBundle(width: Int = 8) extends Bundle{
   val a = UInt(width.W)
@@ -18,7 +18,7 @@ class GCDBundle(width: Int = 8) extends Bundle{
   *
   *
   */
-class GCD(gen : GCDBundle)(implicit p: Parameters) extends LazyModule{
+class GCD(gen : GCDBundle, isTop: Boolean = false)(implicit p: Parameters) extends LazyModule{
   
   // Note : No (or minimal) companion object use just to keep the ambiguity down
   //        and to more closely match the diagrams in the base click repo
@@ -29,7 +29,7 @@ class GCD(gen : GCDBundle)(implicit p: Parameters) extends LazyModule{
   val MX0     = LazyModule(new OrionMux(gen))
   val RF0     = LazyModule(new RegFork(gen, pbInit=0, pcInit=0))
   val RF1     = LazyModule(new RegFork(gen, pbInit=0, pcInit=0))
-  val R0      = LazyModule(new DecoupReg(Bool(), dataInit=1, poInit=1))
+  val R0      = LazyModule(new DecoupReg(Bool(), dataInit=0, poInit=1))
   val F0      = LazyModule(new Fork(Bool()))
   
   // a != b : Output is Bool
@@ -89,14 +89,20 @@ class GCD(gen : GCDBundle)(implicit p: Parameters) extends LazyModule{
   
   ME0.node    := CL2.node
   ME0.node    := CL3.node
+
+
+  override lazy val module = new GCDImp(this, gen, isTop)
   
+  ElaborationArtefacts.add("graphml", module.wrapper.graphML)
+}
+
+class GCDImp(override val wrapper: GCD, gen: GCDBundle, isTop: Boolean = false)(implicit p: Parameters) extends LazyModuleImp(wrapper){
+  val in  = if (isTop) Some(IO(Flipped(new OrionBundle(gen)))) else None
+  val out = if (isTop) Some(IO(new OrionBundle(gen)))          else None
   
-  
-  val in  = InModuleBody { input.makeIOs() }
-  val out = InModuleBody { result.makeIOs() }
-  
-  override lazy val module = new LazyModuleImp(this){
-    
+  if(isTop){
+    in.get  <> wrapper.input.out.head._1
+    out.get <> wrapper.result.in.head._1
   }
 }
 
@@ -106,10 +112,10 @@ object GCDTest extends App {
   implicit val p: Parameters = Parameters.empty
   
   val verilog = (new ChiselStage).emitVerilog(
-    LazyModule(new GCD(new GCDBundle(8))(p)).module,
+    LazyModule(new GCD(new GCDBundle(8), true)(p)).module,
 
     //args
-    Array("--target-dir", "output")
+    Array("--target-dir", "output"/*, "--no-dce"*/)
   )
   
   GenElabArts.gen("GCD")
@@ -117,3 +123,5 @@ object GCDTest extends App {
   
   
 }
+
+

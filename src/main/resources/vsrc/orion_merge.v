@@ -24,7 +24,7 @@ module orion_merge #(
 
 wire inA_token;
 wire inB_token;
-wire outC_bubble;
+wire out_bubble;
 wire click;
 
 reg  pa;
