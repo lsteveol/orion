@@ -17,23 +17,23 @@ import scala.math._
 
 
 import chisel3.experimental._
-//class OrionBundleDriver[T <: Data, B <: OrionBundle[T]](bun: B){
-// class OrionBundleDriver[B <: OrionBundle[_]](parent: Module, bun: B){
-// 
-//   require(DataMirror.directionOf(bun.req) == Direction.Input,  "OrionBundleDriver should be a source (req)!")
-//   require(DataMirror.directionOf(bun.ack) == Direction.Output, "OrionBundleDriver should be a source (ack)!")
-//   
-//   def drive: Unit = {
-//     bun.req.poke(if (bun.req.peek().litValue == 0) true.B else false.B)
-//   }
-//   
-//   def finished: Unit = {
-//     while(bun.ack.peek().litValue != bun.req.peek().litValue){
-//       parent.clock.step(10)
-//     }
-//   }
-//   
-// }
+class OrionBundleDriver[B <: OrionBundle[_]](parent: Module, bun: B){
+
+  require(DataMirror.directionOf(bun.req) == Direction.Input,  "OrionBundleDriver should be a source (req)!")
+  require(DataMirror.directionOf(bun.ack) == Direction.Output, "OrionBundleDriver should be a source (ack)!")
+  
+  def drive: Unit = {
+    parent.clock.step(1)
+    bun.req.poke(if (bun.req.peek().litValue == 0) true.B else false.B)
+  }
+  
+  def finished: Unit = {
+    while(bun.ack.peek().litValue != bun.req.peek().litValue){
+      parent.clock.step(10)
+    }
+  }
+  
+}
 
 class OrionCounterExampleTest extends AnyFlatSpec with ChiselScalatestTester with Matchers {
   behavior of "OrionCounterExample Test"
