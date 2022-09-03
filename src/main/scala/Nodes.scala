@@ -77,25 +77,12 @@ object OrionImp{
   def apply[T <: Data]() = new OrionImp[T]()
 }
 
-/**
-  *   We will use this trait to handle any specific Node methods that are not
-  *   naturally included with the diplomacy nodes
-  */
-trait OrionNodeTrait[T<:Data]{
-  def getBundleType: T 
-}
 
-case class OrionSourceNode[T<: Data](portParams: Seq[OrionPushPortParameters[T]])(implicit valName: ValName) extends SourceNode(OrionImp[T])(portParams) with OrionNodeTrait[T]{
-  override def getBundleType: T = {
-    portParams(0).pushes(0).gen
-  }
-}
+case class OrionSourceNode[T<: Data](portParams: Seq[OrionPushPortParameters[T]])(implicit valName: ValName) extends SourceNode(OrionImp[T])(portParams)
 
-case class OrionSinkNode  [T<: Data](portParams: Seq[OrionPullPortParameters[T]])(implicit valName: ValName) extends SinkNode(OrionImp[T])(portParams) with OrionNodeTrait[T]{
-  override def getBundleType: T = {
-    portParams(0).pulls(0).gen
-  }
-}
+case class OrionSinkNode  [T<: Data](portParams: Seq[OrionPullPortParameters[T]])(implicit valName: ValName) extends SinkNode(OrionImp[T])(portParams)
+
+case class OrionIdentityNode[T<: Data]()(implicit valName: ValName) extends IdentityNode(OrionImp[T])()
 
 
 /**

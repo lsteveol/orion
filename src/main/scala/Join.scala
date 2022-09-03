@@ -56,31 +56,6 @@ class JoinImp[I <: Data, O <: Data](override val wrapper: Join[I,O], body: JoinI
   inb.ack       := out.ack
    
   
-//   val ojoin = Module(new orion_join(wrapper.pInit))
-//   ojoin.io.reset    := reset
-//   ina.ack           := ojoin.io.inA_ack
-//   ojoin.io.inA_req  := ina.req
-//   inb.ack           := ojoin.io.inB_ack
-//   ojoin.io.inB_req  := inb.req
-// 
-//   ojoin.io.outC_ack := out.ack
-//   out.req           := ojoin.io.outC_req
     
   body(this)
 }
-
-
-// class orion_join(pInit : Int) extends BlackBox(Map("P_INIT" -> pInit)) with HasBlackBoxResource {
-//   val io = IO(new Bundle{
-//     val reset     = Input (Reset())
-//     val inA_ack   = Output(Bool())
-//     val inA_req   = Input (Bool())
-//     val inB_ack   = Output(Bool())
-//     val inB_req   = Input (Bool())
-// 
-//     val outC_ack  = Input (Bool())
-//     val outC_req  = Output(Bool())
-//   })
-// 
-//   addResource("vsrc/orion_join.v")
-// }

@@ -15,9 +15,13 @@ import freechips.rocketchip.diplomacy._
   * @param itype
   * @param otype
   *
-  * 
-  *
-  *
+  * ==Example==
+  * You need a simple way to invert some data
+  * {{{
+  * val myFunctionBlock     = LazyModule(new FunctionBlock(Bool, Bool)(f => {
+  *  f.out.data := ~f.in.data
+  * }))
+  * }}}
   *
   *
   */
@@ -32,13 +36,11 @@ class FunctionBlock[I <: Data, O <: Data](itype : I, otype : O)(body: FunctionBl
       OrionPullPortParameters[I](Seq(OrionPullParameters(itype, "fbIn")))
     },
   )
-  
-  //var cpBody = body
       
-  override lazy val module = new FunctionBlockImp[I,O](this, body/*, cpBody*/)
+  override lazy val module = new FunctionBlockImp[I,O](this, body)
 }
 
-class FunctionBlockImp[I <: Data, O <: Data](override val wrapper: FunctionBlock[I,O], body: FunctionBlockImp[I,O] => Unit/*, cpBody: FunctionBlockImp[I,O] => Unit*/)(implicit p: Parameters) extends LazyModuleImp(wrapper){
+class FunctionBlockImp[I <: Data, O <: Data](override val wrapper: FunctionBlock[I,O], body: FunctionBlockImp[I,O] => Unit)(implicit p: Parameters) extends LazyModuleImp(wrapper){
   val in  = wrapper.node.in.head._1
   val out = wrapper.node.out.head._1
   

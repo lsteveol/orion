@@ -1,26 +1,17 @@
-package orion
+package orion.examples
 
 import chisel3._
 import chisel3.util._
 import chisel3.stage.ChiselStage
+
+import orion._
 
 import freechips.rocketchip.config.{Parameters, Field, Config}
 import freechips.rocketchip.diplomacy._
 
 import freechips.rocketchip.util._
 
-import java.io.{File, FileWriter}
-object GenElabArts {
-  def gen(prefix: String) {
-    ElaborationArtefacts.files.foreach { case (extension, contents) =>
-      //println(s"ext - ${extension} : cont - ${contents}")
-      val f = new File(".", s"${prefix}.${extension}")
-      val fw = new FileWriter(f)
-      fw.write(contents())//note the ()
-      fw.close
-    }
-  }
-}
+
 
 
 /**

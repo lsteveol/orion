@@ -7,7 +7,20 @@ import chisel3.util._
 
 import freechips.rocketchip.config.{Parameters, Field, Config}
 import chisel3.internal.sourceinfo.SourceInfo
+import freechips.rocketchip.util._
 
+import java.io.{File, FileWriter}
+object GenElabArts {
+  def gen(prefix: String) {
+    ElaborationArtefacts.files.foreach { case (extension, contents) =>
+      //println(s"ext - ${extension} : cont - ${contents}")
+      val f = new File(".", s"${prefix}.${extension}")
+      val fw = new FileWriter(f)
+      fw.write(contents())//note the ()
+      fw.close
+    }
+  }
+}
 
 object OrionUtils {
   

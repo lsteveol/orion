@@ -34,3 +34,5 @@ class BarrierImp[T <: Data](override val wrapper: Barrier[T])(implicit p: Parame
 
   out.data  := in.data
 }
+
+
