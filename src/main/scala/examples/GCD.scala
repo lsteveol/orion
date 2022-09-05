@@ -122,22 +122,29 @@ class GCDImp(override val wrapper: GCD, gen: GCDBundle, isTop: Boolean = false)(
   }
 }
 
-// 
-// object GCDTest extends App {  
-//   
-//   implicit val p: Parameters = Parameters.empty
-//   
+
+object GenGCD extends App {  
+  
+  implicit val p: Parameters = Parameters.empty
+  
 //   val verilog = (new ChiselStage).emitVerilog(
 //     LazyModule(new GCD(new GCDBundle(8), true)(p)).module,
 // 
 //     //args
 //     Array("--target-dir", "output"/*, "--no-dce"*/)
 //   )
-//   
-//   GenElabArts.gen("GCD")
-//   
-//   
-//   
-// }
+  
+  val verilog = (new ChiselStage).emitVerilog(
+    LazyModule(new GCD(new GCDBundle(8), true)(p)).module,
+
+    //args
+    Array("--target-dir", "output"/*, "--no-dce"*/)
+  )
+  
+  GenElabArts.gen("GCD")
+  
+  
+  
+}
 
 

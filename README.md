@@ -28,6 +28,16 @@ hopefully this allows some exploration that previously seemed too difficult. In 
 the industry can use the higher level libraries such as Chisel to achieve more than we could with traditional Verilog
 designs.
 
+## GCD Example
+To run orion, you will need any requirements for Chisel 3.5. See https://github.com/chipsalliance/chisel3 for details
+if you're just getting started with Chisel.
+
+To run the GCD example circuit tests:
+
+    sbt "testOnly *GCDTest"
+
+Verilog output and VCDs will be saved under `test_run_dir/Orion_GCD_Test_should_check_GCD<width>/` directories.
+
 ## TODO
 - [ ] Clean up some of the type inferencing. Need to see how we can make some of this easier
 - [ ] .lib parsing with config for capturing semi-accurate timing information based on process

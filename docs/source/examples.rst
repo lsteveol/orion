@@ -137,4 +137,17 @@ To run this test,  you can do the following from the main repo directory:
   sbt "testOnly *GCDTest"
 
 
-Waveforms are saved in VCD format for viewing.
+Waveforms are saved in VCD format for viewing. Each test will be under the ``test_run_dir/Orion_GCD_Test_should_check_GCD<width>/`` directory.
+
+
+
+Counter Example
+----------------
+There is an additional counter example which provides a counter with ``enable`` and ``clear`` functionality. Included is an accompanying
+test ``OrionCounterExampleTest`` which will enable the counter to count to the max value, clear the counter, and start the count again.
+
+To run this test, you can do the following from the main repo directory:
+
+::
+
+  sbt "testOnly *OrionCounterExampleTest"
