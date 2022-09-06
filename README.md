@@ -16,6 +16,9 @@ While Orion is based on Click Elements, a long term goal is to be able to switch
 different architectures (e.g. Moustrap, Loihi, generic C-Elements). As the project grows, this will be evaluated for the best way to
 move forward if the desire is there for a feature like this, more than likely resulting in a rearchitected revision of the project.
 
+## Documentation
+orion docs are hosted on readthedocs https://orion-rtd.readthedocs.io/en/latest/
+
 ## Background
 While self-timed circuits is nothing new, it hasn't seemed to get as much attention as globally synchronous
 designs. This is understandable due to the nature of complexity with regards to self-timed circuits
