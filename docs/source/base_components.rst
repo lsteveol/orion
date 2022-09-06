@@ -146,11 +146,11 @@ a naming collision with the native Chisel ``Mux``.
 
 Demux
 --------------
-``Demux`` implements 
+``Demux`` implements a demux node where an input channel is steered between two output channels based on a select channel.
 
 Merge
 --------------
-``Merge` implementes a merge node where two mutually exclusive input channels are converted to a single output channel.
+``Merge`` implementes a merge node where two mutually exclusive input channels are converted to a single output channel.
 
 
 Barrier
